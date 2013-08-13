@@ -1,4 +1,4 @@
-module EnumTable
+module EnumRefTable
   autoload :VERSION, 'enum_table/version'
   autoload :Record, 'enum_table/record'
   autoload :Reflection, 'enum_table/reflection'
@@ -6,6 +6,6 @@ module EnumTable
   autoload :SchemaStatements, 'enum_table/schema_statements'
 end
 
-require 'enum_table/railtie' if defined?(Rails)
-ActiveRecord::Base.send :include, EnumTable::Record
-ActiveRecord::ConnectionAdapters::AbstractAdapter.send :include, EnumTable::SchemaStatements
+require 'enum_ref_table/railtie' if defined?(Rails)
+ActiveRecord::Base.send :include, EnumRefTable::Record
+ActiveRecord::ConnectionAdapters::AbstractAdapter.send :include, EnumRefTable::SchemaStatements
