@@ -16,7 +16,7 @@ module EnumRefTable
             reflection.send "#{key}=", value
         end
         reflection.to_populate do |ref|
-          enum_map(name, options).each do |value, id|
+          enum_ref_map(name, options).each do |value, id|
             ref.add_value id, value
           end
         end
