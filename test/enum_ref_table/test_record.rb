@@ -70,37 +70,24 @@ describe EnumRefTable do
       User.enum_refs[:gender].value(1).must_equal :male
     end
 
-    it "raises an ArgumentError if :table is something else" do
-      ->{ User.enum_ref :gender, table: Object.new }.must_raise ArgumentError, /invalid :table specifier/
-    end
-
     it "passes other options to the Reflection" do
       User.enum_ref :gender, id_name: :gender_number
       enum_ref = User.enum_refs[:gender]
       enum_ref.id_name.must_equal :gender_number
     end
 
-    describe "when missing tables are not allowed" do
-      it "raises an error if the underlying table does not exist" do
-        # must_raise does not do ancestor lookup in some versions of minitest
-        # (notably the version that ships with Ruby 1.9.3). Avoid it until we
-        # have a testrb that honors the Gemfile.
-        exception = nil
-        begin
-          User.enum_ref(:status)
-        rescue => exception
-        end
-        exception.must_be_kind_of StandardError
-      end
+    it "does not cry immediately if the enum table does not exist" do
+      User.enum_ref(:status)
     end
 
-    describe "when missing tables are allowed" do
-      before { EnumRefTable.missing_tables_allowed }
-      after { EnumRefTable.reset }
-
-      it "does not raise an error if the underlying table does not exist" do
-        User.enum_ref :status
-      end
+    it "does cry when you first try to use the enum if the enum table does not exist" do
+      User.enum_ref(:status)
+      exception = nil
+      begin
+        User.enum_ref_id(:status, 'awesome')
+      rescue => exception
+     end
+      exception.must_be_kind_of StandardError
     end
 
     describe "on a subclass" do
@@ -197,6 +184,10 @@ describe EnumRefTable do
       attributes = User.initialize_attributes('gender_id' => 1, 'gender' => :male)
       attributes['gender_id'].must_equal 1
       attributes.key?('gender').must_equal false
+    end
+
+    it "should take an options hash in addition to the attributes hash and not raise an error" do
+      User.initialize_attributes({ 'gender' => 'female' }, { :some => :stuff }).wont_be_nil
     end
   end
 
